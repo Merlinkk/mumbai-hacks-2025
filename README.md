@@ -1,36 +1,215 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nabha Health - Telemedicine App for Rural Punjab
+
+A multilingual telemedicine application designed specifically for Nabha and surrounding rural areas in Punjab, India. The app addresses healthcare challenges in rural communities by providing AI-powered symptom checking, video consultations, digital health records, and real-time medicine availability.
+
+## Features
+
+### Core Features
+- **Multilingual Support**: English and Hindi interface
+- **AI-Powered Symptom Checker**: Optimized for low-bandwidth areas
+- **Video Consultations**: Connect with doctors in 5 seconds
+- **Digital Health Records**: Accessible offline for rural patients
+- **Real-time Medicine Availability**: Check local pharmacy stock
+- **Voice Call Integration**: Twilio + Ultravox AI agent integration
+- **Emergency Services**: Quick access to emergency contacts
+
+### Mobile-First Design
+- Responsive design optimized for mobile devices
+- Offline capabilities for areas with poor connectivity
+- Simple, intuitive interface for users with varying literacy levels
+- Visual icons and clear navigation
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Voice Integration**: Twilio + Ultravox AI
+- **Deployment**: Cloudflare (OpenNext.js)
+- **State Management**: React hooks
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- Bun (recommended) or npm
+- Twilio account with phone number
+- Ultravox account with AI agent
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd nabha-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+bun install
+# or
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Configure environment variables in `.env.local`:
+```env
+# Twilio Configuration
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
-## Learn More
+# Ultravox Configuration
+ULTRAVOX_API_KEY=your_ultravox_api_key
+ULTRAVOX_AGENT_ID=your_ultravox_agent_id
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Start the development server:
+```bash
+bun dev
+# or
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+### Building for Production
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+bun run build
+# or
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Deployment to Cloudflare
+
+```bash
+bun run deploy
+# or
+npm run deploy
+```
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   └── make-call/          # Voice call API endpoint
+│   ├── ai-chat/                # AI symptom checker
+│   ├── appointments/           # Appointment management
+│   ├── book-appointment/       # Appointment booking
+│   ├── consult-doctor/         # Doctor consultation
+│   ├── emergency/              # Emergency services
+│   ├── pharmacy/               # Medicine availability
+│   ├── profile/                # User profile
+│   ├── records/                # Health records
+│   ├── video-consult/          # Video consultation
+│   ├── globals.css             # Global styles
+│   ├── layout.tsx              # Root layout
+│   └── page.tsx                # Home page
+├── components/
+│   └── CallIntegration.tsx     # Voice call component
+```
+
+## Key Features Implementation
+
+### 1. AI Symptom Checker (`/ai-chat`)
+- Multilingual chat interface (English/Hindi)
+- Simulated AI responses for common symptoms
+- Integration with voice call system
+- Quick action buttons for common symptoms
+
+### 2. Voice Call Integration (`/api/make-call`)
+- Twilio + Ultravox integration
+- AI agent for voice consultations
+- Template context for personalized calls
+- Error handling and status reporting
+
+### 3. Digital Health Records (`/records`)
+- Offline-first design
+- Local storage for cached records
+- Sync when online
+- Multiple record types (consultations, lab tests, prescriptions)
+
+### 4. Medicine Availability (`/pharmacy`)
+- Real-time pharmacy lookup
+- Medicine availability status
+- Local pharmacy information
+- Offline cached data
+
+### 5. Video Consultations (`/video-consult`)
+- Simulated video call interface
+- Doctor information and availability
+- Technical requirements display
+- Alternative options for connectivity issues
+
+## Configuration
+
+### Twilio Setup
+1. Create a Twilio account
+2. Purchase a phone number
+3. Get Account SID and Auth Token
+4. Configure webhook URLs if needed
+
+### Ultravox Setup
+1. Create an Ultravox account
+2. Set up an AI agent with the provided prompt
+3. Get API key and Agent ID
+4. Test the agent configuration
+
+### AI Agent Prompt
+The app uses a multilingual AI voice agent with the following capabilities:
+- Symptom checking and triage
+- Pharmacy lookup
+- Appointment scheduling
+- Emergency guidance
+- Multilingual support (English/Hindi)
+
+## Offline Capabilities
+
+The app is designed to work in low-connectivity areas:
+- Cached health records
+- Offline medicine availability
+- Local storage for user data
+- Progressive Web App features
+
+## Accessibility Features
+
+- Large, clear buttons and text
+- Visual icons for better understanding
+- Simple navigation
+- Multilingual support
+- High contrast colors
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions:
+- Email: support@nabhahealth.com
+- Phone: +91 98765 43210
+- Address: Nabha Civil Hospital, Punjab, India
+
+## Acknowledgments
+
+- Nabha Civil Hospital staff
+- Punjab Health Department
+- Local pharmacy partners
+- Rural community members who provided feedback
