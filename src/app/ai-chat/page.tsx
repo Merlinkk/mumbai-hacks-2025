@@ -209,7 +209,7 @@ export default function AIChat() {
         <div className="px-4 py-3">
           <CallIntegration 
             templateContext={{
-              userLocation: 'Nabha, Punjab',
+              userLocation: 'Baddi, Himachal',
               appVersion: '1.0.0',
               chatHistory: messages.slice(-3).map(m => ({ text: m.text, isUser: m.isUser }))
             }}

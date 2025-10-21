@@ -1,16 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { apiClient, UserProfile } from '../../lib/api';
 
 export default function Profile() {
   const { t, language, setLanguage } = useLanguage();
+  const { user: authUser, logout } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [user, setUser] = useState({
-    name: 'Rajesh Kumar',
+    name: 'User',
     age: 45,
     phone: '+91 98765 43210',
-    location: 'Nabha, Punjab',
+    location: 'Baddi, Himachal',
     emergencyContact: '+91 98765 43211',
     bloodGroup: 'O+',
     allergies: 'None',
@@ -18,6 +23,34 @@ export default function Profile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (authUser?.isAuthenticated && authUser.phoneNumber) {
+      loadUserProfile();
+    }
+  }, [authUser]);
+
+  const loadUserProfile = async () => {
+    if (!authUser?.phoneNumber) return;
+    
+    try {
+      setIsLoading(true);
+      const profile = await apiClient.getUserProfile(authUser.phoneNumber);
+      setUserProfile(profile);
+      
+      // Update user data with profile information
+      setUser(prev => ({
+        ...prev,
+        name: profile.name || 'User',
+        phone: profile.phoneNumber,
+      }));
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSave = () => {
     setIsEditing(false);
@@ -29,7 +62,8 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
       {/* Safe area spacing for mobile status bar */}
       <div className="h-6 bg-blue-600"></div>
       
@@ -48,10 +82,10 @@ export default function Profile() {
               {language === 'en' ? 'हिं' : 'EN'}
             </button>
             <button
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={logout}
               className="text-white text-sm font-medium"
             >
-              {isEditing ? 'Cancel' : 'Edit'}
+              Logout
             </button>
           </div>
         </div>
@@ -64,9 +98,13 @@ export default function Profile() {
           <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">👤</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{user.name}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {isLoading ? 'Loading...' : user.name}
+          </h2>
           <p className="text-gray-600 mb-1">{user.location}</p>
-          <p className="text-sm text-gray-500">Member since January 2024</p>
+          <p className="text-sm text-gray-500">
+            {userProfile?.tickets?.length || 0} consultations • Member since January 2024
+          </p>
         </div>
 
         {/* Personal Information */}
@@ -288,25 +326,26 @@ export default function Profile() {
         <div className="flex justify-around">
           <Link href="/" className="flex flex-col items-center space-y-1 text-gray-400">
             <span className="text-lg">🏠</span>
-            <span className="text-xs">Home</span>
+            <span className="text-xs">{t('common.home')}</span>
           </Link>
           <Link href="/appointments" className="flex flex-col items-center space-y-1 text-gray-400">
             <span className="text-lg">📅</span>
-            <span className="text-xs">Appointments</span>
+            <span className="text-xs">{t('common.appointments')}</span>
           </Link>
           <Link href="/records" className="flex flex-col items-center space-y-1 text-gray-400">
             <span className="text-lg">📋</span>
-            <span className="text-xs">Records</span>
+            <span className="text-xs">{t('common.records')}</span>
           </Link>
           <Link href="/profile" className="flex flex-col items-center space-y-1 text-blue-600">
             <span className="text-lg">👤</span>
-            <span className="text-xs">Profile</span>
+            <span className="text-xs">{t('common.profile')}</span>
           </Link>
         </div>
       </div>
 
       {/* Bottom padding */}
       <div className="h-20"></div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -170,7 +170,7 @@ export default function DoctorProfile({ params }: { params: { id: string } }) {
             <span className="text-gray-500">📍</span>
             <div>
               <p className="font-medium text-gray-900">Nabha Civil Hospital</p>
-              <p className="text-sm text-gray-600">Civil Hospital Road, Nabha, Punjab 147301</p>
+              <p className="text-sm text-gray-600">Civil Hospital Road, Baddi, Himachal 147301</p>
               <div className="flex items-center space-x-4 mt-2">
                 <span className="text-xs text-gray-500">📍 0.5 km away</span>
                 <button className="text-indigo-600 text-sm font-medium">Get Directions</button>

@@ -49,7 +49,7 @@ const medicines: Medicine[] = [
 ];
 
 export default function Medicines() {
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language, setLanguage, cycleLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
@@ -69,12 +69,12 @@ export default function Medicines() {
           <Link href="/" className="text-gray-600">
             <span className="text-xl">←</span>
           </Link>
-          <h1 className="font-semibold text-lg text-gray-900">{t('home.medicines')}</h1>
+          <h1 className="font-semibold text-lg text-gray-900">{t('medicines.title')}</h1>
           <button
-            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+            onClick={cycleLanguage}
             className="px-3 py-1 bg-gray-100 rounded-full text-xs font-medium"
           >
-            {language === 'en' ? 'हिं' : 'EN'}
+            {language === 'en' ? 'EN' : language === 'hi' ? 'हिं' : 'ਪੰ'}
           </button>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function Medicines() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for medicines..."
+            placeholder={t('medicines.searchPlaceholder')}
             className="w-full px-4 py-3 pl-12 bg-gray-50 text-gray-900 rounded-xl text-sm placeholder-gray-500 border-0 focus:ring-2 focus:ring-indigo-500"
           />
           <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
@@ -97,58 +97,62 @@ export default function Medicines() {
         <div className="grid grid-cols-4 gap-3">
           <button className="bg-gray-50 rounded-xl p-3 text-center">
             <div className="text-lg mb-1">🌡️</div>
-            <span className="text-xs font-medium text-gray-700">Fever</span>
+            <span className="text-xs font-medium text-gray-700">{t('medicines.categories.fever')}</span>
           </button>
           <button className="bg-gray-50 rounded-xl p-3 text-center">
             <div className="text-lg mb-1">🤧</div>
-            <span className="text-xs font-medium text-gray-700">Cold</span>
+            <span className="text-xs font-medium text-gray-700">{t('medicines.categories.cold')}</span>
           </button>
           <button className="bg-gray-50 rounded-xl p-3 text-center">
             <div className="text-lg mb-1">🤕</div>
-            <span className="text-xs font-medium text-gray-700">Pain</span>
+            <span className="text-xs font-medium text-gray-700">{t('medicines.categories.pain')}</span>
           </button>
           <button className="bg-gray-50 rounded-xl p-3 text-center">
             <div className="text-lg mb-1">💊</div>
-            <span className="text-xs font-medium text-gray-700">All</span>
+            <span className="text-xs font-medium text-gray-700">{t('medicines.categories.all')}</span>
           </button>
         </div>
 
         {/* Medicines List */}
         <div className="space-y-4">
           {filteredMedicines.map((medicine) => (
-            <div key={medicine.id} className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{medicine.name}</h3>
-                  <p className="text-sm text-gray-600">Generic: {medicine.genericName}</p>
-                  <p className="text-sm text-gray-500">{medicine.dosage}</p>
+            <div key={medicine.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              {/* Main Data Section */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 pr-4">
+                  <h3 className="font-semibold text-gray-900 text-lg mb-1">{medicine.name}</h3>
+                  <p className="text-sm text-gray-600 mb-1">{t('medicines.generic')}: {medicine.genericName}</p>
+                  {/* <p className="text-sm text-gray-500 mb-2">{medicine.dosage}</p> */}
+                  {/* <p className="font-bold text-gray-900 text-lg">₹{medicine.price}</p> */}
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">₹{medicine.price}</p>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    medicine.availability 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {medicine.availability ? 'Available' : 'Out of Stock'}
+                
+                {/* Status Indicator */}
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-center ${
+                  medicine.availability 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  <span className="text-xs font-medium leading-tight">
+                    {medicine.availability ? t('medicines.available') : t('medicines.outOfStock')}
                   </span>
                 </div>
               </div>
               
+              {/* Bottom Section - Location and Action */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500">📍</span>
-                  <span className="text-sm text-gray-700">{medicine.pharmacy}</span>
-                  <span className="text-xs text-gray-500">({medicine.distance})</span>
+                {/* Location Info */}
+                <div className="flex-1 pr-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500">📍</span>
+                    <span className="text-sm text-gray-700 font-medium">{medicine.pharmacy}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 ml-5">{medicine.distance}</p>
                 </div>
-                <div className="flex space-x-2">
-                  <button className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm font-medium">
-                    Order
-                  </button>
-                  <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">
-                    Call
-                  </button>
-                </div>
+                
+                {/* Call Button */}
+                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                  {t('medicines.call')}
+                </button>
               </div>
             </div>
           ))}
@@ -161,11 +165,11 @@ export default function Medicines() {
               <span className="text-lg">📄</span>
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-indigo-900">Upload Prescription</h3>
-              <p className="text-sm text-indigo-700">Get medicines delivered based on doctor&apos;s prescription</p>
+              <h3 className="font-semibold text-indigo-900">{t('medicines.uploadPrescription')}</h3>
+              <p className="text-sm text-indigo-700">{t('medicines.uploadPrescriptionDescription')}</p>
             </div>
             <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-              Upload
+              {t('medicines.upload')}
             </button>
           </div>
         </div>
@@ -174,13 +178,13 @@ export default function Medicines() {
         <div className="grid grid-cols-2 gap-4">
           <Link href="/ai-chat" className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
             <div className="text-2xl mb-2">🤖</div>
-            <div className="text-sm font-medium text-blue-800">AI Assistant</div>
-            <div className="text-xs text-blue-600">Medicine advice</div>
+            <div className="text-sm font-medium text-blue-800">{t('medicines.aiAssistant')}</div>
+            <div className="text-xs text-blue-600">{t('medicines.medicineAdvice')}</div>
           </Link>
           <Link href="/pharmacy" className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
             <div className="text-2xl mb-2">🏪</div>
-            <div className="text-sm font-medium text-green-800">Find Pharmacy</div>
-            <div className="text-xs text-green-600">Nearby stores</div>
+            <div className="text-sm font-medium text-green-800">{t('medicines.findPharmacy')}</div>
+            <div className="text-xs text-green-600">{t('medicines.nearbyStores')}</div>
           </Link>
         </div>
       </div>

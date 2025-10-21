@@ -1,8 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import ProtectedRoute from '../components/ProtectedRoute';
+import VideoConsultationLoader from '../components/VideoConsultationLoader';
+import { apiClient, UserProfile } from '../lib/api';
 
 // Service card component
 interface ServiceCardProps {
@@ -50,15 +54,142 @@ function SpecialtyIcon({ icon, label, href }: SpecialtyIconProps) {
 }
 
 export default function Home() {
-  const { t, language, setLanguage } = useLanguage();
-  // Removed unused currentTime state
+  const { t, language, cycleLanguage } = useLanguage();
+  const { user, logout } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showVideoLoader, setShowVideoLoader] = useState(false);
+  const [showCallConfirmation, setShowCallConfirmation] = useState(false);
+  const [callCountdown, setCallCountdown] = useState(0);
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'hi' : 'en');
+  useEffect(() => {
+    if (user?.isAuthenticated && user.phoneNumber) {
+      loadUserProfile();
+    }
+  }, [user]);
+
+  const loadUserProfile = async () => {
+    if (!user?.phoneNumber) return;
+    
+    try {
+      setIsLoading(true);
+      const profile = await apiClient.getUserProfile(user.phoneNumber);
+      setUserProfile(profile);
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getLanguageLabel = () => {
+    switch (language) {
+      case 'en': return 'EN';
+      case 'hi': return 'हिं';
+      case 'pa': return 'ਪੰ';
+      default: return 'EN';
+    }
+  };
+
+  const handleVideoConsultation = () => {
+    setShowVideoLoader(true);
+  };
+
+  const handleVideoLoaderComplete = () => {
+    setShowVideoLoader(false);
+  };
+
+  const handleTalkToAgent = async () => {
+    setShowCallConfirmation(true);
+    setCallCountdown(10);
+    
+    try {
+      // Start countdown
+      const countdownInterval = setInterval(() => {
+        setCallCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Create appointment entry after countdown
+      setTimeout(async () => {
+        setShowCallConfirmation(false);
+        setCallCountdown(0);
+        
+        // Create appointment entry with translation keys
+        const appointmentData = {
+          id: `appointment-${Date.now()}`,
+          type: 'agent_call',
+          titleKey: 'common.agentCall', // Store translation key instead of translated text
+          status: 'pending',
+          date: new Date().toISOString(),
+          descriptionKey: 'common.awaitingDoctorResponse', // Store translation key instead of translated text
+          phoneNumber: user?.phoneNumber,
+          name: userProfile?.name || 'User'
+        };
+
+        // Get existing appointments from localStorage
+        const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+        
+        // Add new appointment
+        const updatedAppointments = [...existingAppointments, appointmentData];
+        
+        // Save to localStorage
+        localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
+        
+        // Show success message
+        alert(t('common.callCompleted'));
+        
+      }, 10000); // 10 seconds
+      
+    } catch (error) {
+      console.error('Error handling agent call:', error);
+      setShowCallConfirmation(false);
+      setCallCountdown(0);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <ProtectedRoute>
+      {showVideoLoader && (
+        <VideoConsultationLoader 
+          roomId="68d7c290efab985938a9ffee" 
+          onComplete={handleVideoLoaderComplete} 
+        />
+      )}
+      {showCallConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 mx-4 max-w-sm w-full text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">📞</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{t('common.callInProgress')}</h3>
+            <p className="text-gray-600 mb-4">{t('common.connectingAgent')}</p>
+            {callCountdown > 0 && (
+              <div className="text-3xl font-bold text-blue-600 mb-4">
+                {callCountdown}
+              </div>
+            )}
+            <p className="text-sm text-gray-500 mb-6">
+              {t('common.consultationRecorded')}
+            </p>
+            <button
+              onClick={() => {
+                setShowCallConfirmation(false);
+                setCallCountdown(0);
+              }}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium"
+            >
+              {t('common.cancelCall')}
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="min-h-screen bg-white">
       {/* Safe area spacing for mobile status bar */}
       <div className="h-6 bg-white"></div>
       
@@ -70,22 +201,32 @@ export default function Home() {
               <span className="text-lg">👋</span>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">{t('home.greeting')}</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {isLoading ? t('common.loading') : `${t('common.hello')}, ${userProfile?.name || user?.name || t('common.user')}`}
+              </h1>
               <div className="flex items-center space-x-1">
                 <span className="text-red-500 text-sm">📍</span>
-                <p className="text-sm text-gray-600">Nabha, Punjab</p>
+                <p className="text-sm text-gray-600">{t('common.nabhaPunjab')}</p>
               </div>
             </div>
           </div>
           <div className="flex items-center space-x-2">
             <button
-              onClick={toggleLanguage}
+              onClick={cycleLanguage}
               className="px-3 py-1 bg-purple-100 hover:bg-purple-200 rounded-full text-xs font-medium text-purple-800 transition-colors"
             >
-              {language === 'en' ? 'हिं' : 'EN'}
+              {getLanguageLabel()}
             </button>
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
-              <span className="text-white text-sm">👤</span>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={logout}
+                className="text-gray-600 hover:text-gray-800 text-sm font-medium"
+              >
+                {t('common.logout')}
+              </button>
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
+                <span className="text-white text-sm">👤</span>
+              </div>
             </div>
           </div>
         </div>
@@ -115,102 +256,42 @@ export default function Home() {
                 </div>
               </Link>
 
-              <Link href="/video-consult" className="block">
-                <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 h-36 flex flex-col justify-center items-center hover:border-purple-300 transition-all shadow-sm">
+              <button 
+                onClick={handleVideoConsultation}
+                className="block w-full"
+              >
+                <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 h-36 flex flex-col justify-center items-center hover:border-green-300 transition-all shadow-sm">
                   <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                    <span className="text-3xl">🏠</span>
+                    <span className="text-3xl">📹</span>
                   </div>
                   <h3 className="font-bold text-lg text-gray-900 text-center">{t('home.videoConsult')}</h3>
                   <p className="text-sm text-gray-500 mt-1 text-center">{t('home.connectIn5Sec')}</p>
                 </div>
-              </Link>
+              </button>
             </div>
 
-        {/* Symptom Checker */}
+        {/* Quick Actions */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="font-bold text-gray-900 mb-4">What are your symptoms?</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <button className="flex flex-col items-center space-y-3 p-4 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors border border-pink-100">
-              <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">🌡️</span>
+          <h2 className="font-bold text-gray-900 mb-4">{t('common.quickActions')}</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={handleTalkToAgent}
+              className="flex flex-col items-center space-y-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors border border-blue-100"
+            >
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center shadow-sm">
+                <span className="text-xl">📞</span>
               </div>
-              <span className="text-sm text-gray-800 font-medium">Temperature</span>
+              <span className="text-sm text-gray-800 font-medium">{t('common.talkToAgent')}</span>
             </button>
-            <button className="flex flex-col items-center space-y-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors border border-blue-100">
-              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">🤧</span>
+            <button 
+              onClick={handleVideoConsultation}
+              className="flex flex-col items-center space-y-3 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors border border-green-100"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shadow-sm">
+                <span className="text-xl">📹</span>
               </div>
-              <span className="text-sm text-gray-800 font-medium">Cold</span>
+              <span className="text-sm text-gray-800 font-medium">{t('common.videoConsult')}</span>
             </button>
-            <button className="flex flex-col items-center space-y-3 p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors border border-yellow-100">
-              <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">🤕</span>
-              </div>
-              <span className="text-sm text-gray-800 font-medium">Headache</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Popular Doctors */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="font-bold text-gray-900 mb-4">Popular doctors</h2>
-          <div className="space-y-4">
-            {/* Doctor 1 */}
-            <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition-all">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">👨‍⚕️</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Dr. Rajesh Kumar</h3>
-                <p className="text-sm text-gray-600">General Physician</p>
-                <div className="flex items-center space-x-1 mt-1">
-                  <span className="text-yellow-500 text-sm">⭐</span>
-                  <span className="text-sm font-semibold">4.9</span>
-                  <span className="text-xs text-gray-500">(127 reviews)</span>
-                </div>
-              </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                {t('common.book')}
-              </button>
-            </div>
-
-            {/* Doctor 2 */}
-            <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition-all">
-              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">👩‍⚕️</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Dr. Priya Sharma</h3>
-                <p className="text-sm text-gray-600">Pediatrician</p>
-                <div className="flex items-center space-x-1 mt-1">
-                  <span className="text-yellow-500 text-sm">⭐</span>
-                  <span className="text-sm font-semibold">4.8</span>
-                  <span className="text-xs text-gray-500">(98 reviews)</span>
-                </div>
-              </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                {t('common.book')}
-              </button>
-            </div>
-
-            {/* Doctor 3 */}
-            <div className="flex items-center space-x-4 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition-all">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-2xl">👨‍⚕️</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-gray-900">Dr. Amit Singh</h3>
-                <p className="text-sm text-gray-600">Orthopedist</p>
-                <div className="flex items-center space-x-1 mt-1">
-                  <span className="text-yellow-500 text-sm">⭐</span>
-                  <span className="text-sm font-semibold">4.7</span>
-                  <span className="text-xs text-gray-500">(156 reviews)</span>
-                </div>
-              </div>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                {t('common.book')}
-              </button>
-            </div>
           </div>
         </div>
 
@@ -238,31 +319,21 @@ export default function Home() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
         <div className="flex justify-around">
-          <Link href="/" className="flex flex-col items-center space-y-2 text-blue-600">
-            <div className="relative">
-              <span className="text-lg">🏠</span>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gray-800 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">N</span>
-              </div>
-            </div>
+          <Link href="/" className="flex flex-col items-center space-y-1 text-blue-600">
+            <span className="text-lg">🏠</span>
             <span className="text-xs font-medium">{t('common.home')}</span>
           </Link>
-          <Link href="/appointments" className="flex flex-col items-center space-y-2 text-gray-400">
-            <div className="relative">
-              <span className="text-lg">📅</span>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">17</span>
-              </div>
-            </div>
+          <Link href="/appointments" className="flex flex-col items-center space-y-1 text-gray-400">
+            <span className="text-lg">📅</span>
             <span className="text-xs font-medium">{t('common.appointments')}</span>
           </Link>
-          <Link href="/records" className="flex flex-col items-center space-y-2 text-gray-400">
+          <Link href="/records" className="flex flex-col items-center space-y-1 text-gray-400">
             <span className="text-lg">📋</span>
             <span className="text-xs font-medium">{t('common.records')}</span>
           </Link>
-          <Link href="/profile" className="flex flex-col items-center space-y-2 text-gray-400">
+          <Link href="/profile" className="flex flex-col items-center space-y-1 text-gray-400">
             <span className="text-lg">👤</span>
             <span className="text-xs font-medium">{t('common.profile')}</span>
           </Link>
@@ -271,6 +342,7 @@ export default function Home() {
 
       {/* Bottom padding to account for fixed navigation */}
       <div className="h-20"></div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }
