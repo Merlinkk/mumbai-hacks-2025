@@ -37,7 +37,7 @@ export default function VideoConsultationLoader({ roomId, onComplete }: VideoCon
           <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
         </div>
         
-        {/* Nabha Logo */}
+        {/* Baddi Logo */}
         <div className="absolute bottom-6 left-6">
           <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
             <span className="text-white text-sm font-bold">N</span>

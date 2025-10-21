@@ -28,13 +28,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for existing authentication on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('nabha-user');
+    const savedUser = localStorage.getItem('baddi-user');
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
         setUser(userData);
       } catch (err) {
-        localStorage.removeItem('nabha-user');
+        localStorage.removeItem('baddi-user');
       }
     }
   }, []);
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       setUser(userData);
-      localStorage.setItem('nabha-user', JSON.stringify(userData));
+      localStorage.setItem('baddi-user', JSON.stringify(userData));
       return true;
     } catch (err) {
       setError('Login failed. Please try again.');
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('nabha-user');
+    localStorage.removeItem('baddi-user');
   };
 
   return (

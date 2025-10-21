@@ -14,7 +14,7 @@ interface LanguageContextType {
 const translations = {
   en: {
     // Home page
-    'home.title': 'Nabha Health',
+    'home.title': 'Baddi Health',
     'home.greeting': 'Hello, Rajesh Kumar',
     'home.physicalAppointment': 'Physical Appointment',
     'home.atHospital': 'At Hospital',
@@ -77,7 +77,7 @@ const translations = {
     'common.cancelCall': 'Cancel Call',
     'common.hello': 'Hello',
     'common.user': 'User',
-    'common.nabhaPunjab': 'Baddi, Himachal',
+    'common.baddiHimachal': 'Baddi, Himachal',
     'common.sync': 'Sync',
     'common.online': 'Online',
     'common.offline': 'Offline',
@@ -348,7 +348,7 @@ const translations = {
     'common.cancelCall': 'कॉल रद्द करें',
     'common.hello': 'नमस्ते',
     'common.user': 'उपयोगकर्ता',
-    'common.nabhaPunjab': 'नाभा, पंजाब',
+    'common.baddiHimachal': 'बड्डी, हिमाचल',
     'common.sync': 'सिंक',
     'common.online': 'ऑनलाइन',
     'common.offline': 'ऑफलाइन',
@@ -619,7 +619,7 @@ const translations = {
     'common.cancelCall': 'ਕਾਲ ਰੱਦ ਕਰੋ',
     'common.hello': 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ',
     'common.user': 'ਯੂਜਰ',
-    'common.nabhaPunjab': 'ਨਾਭਾ, ਪੰਜਾਬ',
+    'common.baddiHimachal': 'ਬੱਡੀ, ਹਿਮਾਚਲ',
     'common.sync': 'ਸਿੰਕ',
     'common.online': 'ਔਨਲਾਈਨ',
     'common.offline': 'ਔਫਲਾਈਨ',

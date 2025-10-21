@@ -23,7 +23,7 @@ const medicines: Medicine[] = [
     dosage: '10 tablets',
     price: 15,
     availability: true,
-    pharmacy: 'Nabha Medical Store',
+    pharmacy: 'Baddi Medical Store',
     distance: '0.5 km'
   },
   {

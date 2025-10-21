@@ -27,7 +27,7 @@ const surgeries: Surgery[] = [
     recoveryTime: '2-4 weeks',
     estimatedCost: 25000,
     available: true,
-    hospital: 'Nabha Civil Hospital',
+    hospital: 'Baddi Civil Hospital',
     doctor: 'Dr. Rajesh Kumar'
   },
   {
@@ -51,7 +51,7 @@ const surgeries: Surgery[] = [
     recoveryTime: '1-2 weeks',
     estimatedCost: 45000,
     available: true,
-    hospital: 'Nabha Civil Hospital',
+    hospital: 'Baddi Civil Hospital',
     doctor: 'Dr. Amit Singh'
   },
   {

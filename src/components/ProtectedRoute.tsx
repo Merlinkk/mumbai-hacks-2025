@@ -22,7 +22,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
               <span className="text-2xl">🏥</span>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Welcome to Nabha Health
+              Welcome to Baddi Health
             </h1>
             <p className="text-gray-600 mb-6">
               Please sign in with your phone number to access your health records and services.

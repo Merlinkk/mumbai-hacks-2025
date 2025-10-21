@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nabha Health - Telemedicine for Rural Punjab",
-  description: "Multilingual telemedicine app for video consultations, AI symptom checker, and digital health records for Nabha and surrounding rural areas",
+  title: "Baddi Health - Telemedicine for Rural Himachal",
+  description: "Multilingual telemedicine app for video consultations, AI symptom checker, and digital health records for Baddi and surrounding rural areas",
 };
 
 export const viewport = {

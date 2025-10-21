@@ -115,10 +115,10 @@ class ApiClient {
     return [
       {
         id: '1',
-        name: 'Nabha Medical Store',
-        address: 'Near Civil Hospital, Nabha',
+        name: 'Baddi Medical Store',
+        address: 'Near Civil Hospital, Baddi',
         phone_number: '+91 98765 43210',
-        location_area: 'Nabha',
+        location_area: 'Baddi',
         inventory: []
       },
       {

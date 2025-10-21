@@ -28,7 +28,7 @@ const doctors: { [key: string]: Doctor } = {
     nextAvailable: 'Today 2:00 PM',
     fee: 500,
     image: '👨‍⚕️',
-    description: 'Experienced general physician with expertise in preventive care and chronic disease management. Dr. Kumar has been serving the Nabha community for over 15 years and is known for his patient-centered approach.',
+    description: 'Experienced general physician with expertise in preventive care and chronic disease management. Dr. Kumar has been serving the Baddi community for over 15 years and is known for his patient-centered approach.',
     languages: ['English', 'Hindi', 'Punjabi'],
     education: ['MBBS - Government Medical College, Patiala', 'MD - General Medicine - PGI Chandigarh'],
     achievements: ['Best General Physician Award 2023', 'Patient Choice Award 2022', 'Community Service Excellence 2021'],
@@ -169,7 +169,7 @@ export default function DoctorProfile({ params }: { params: { id: string } }) {
           <div className="flex items-start space-x-3">
             <span className="text-gray-500">📍</span>
             <div>
-              <p className="font-medium text-gray-900">Nabha Civil Hospital</p>
+              <p className="font-medium text-gray-900">Baddi Civil Hospital</p>
               <p className="text-sm text-gray-600">Civil Hospital Road, Baddi, Himachal 147301</p>
               <div className="flex items-center space-x-4 mt-2">
                 <span className="text-xs text-gray-500">📍 0.5 km away</span>

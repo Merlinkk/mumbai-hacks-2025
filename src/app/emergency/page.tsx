@@ -127,7 +127,7 @@ export default function Emergency() {
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex-1">
-                <h4 className="font-medium text-gray-900">Nabha Civil Hospital</h4>
+                <h4 className="font-medium text-gray-900">Baddi Civil Hospital</h4>
                 <p className="text-sm text-gray-600">0.5 km • 24/7 Emergency</p>
               </div>
               <div className="flex space-x-2">

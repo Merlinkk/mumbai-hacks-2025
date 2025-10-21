@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.nirmayahealth.app',
-  appName: 'nirmayahealth',
+  appId: 'com.nirogya.app',
+  appName: 'nirogya',
   webDir: 'out',
   plugins: {
     StatusBar: {

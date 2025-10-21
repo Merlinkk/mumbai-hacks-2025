@@ -15,10 +15,10 @@ interface PharmacyWithDistance extends Pharmacy {
 const mockPharmacies: PharmacyWithDistance[] = [
   {
     id: '1',
-    name: 'Nabha Medical Store',
-    address: 'Near Civil Hospital, Nabha',
+    name: 'Baddi Medical Store',
+    address: 'Near Civil Hospital, Baddi',
     phone_number: '+91 98765 43210',
-    location_area: 'Nabha',
+    location_area: 'Baddi',
     distance: '0.5 km',
     inventory: []
   },
@@ -34,9 +34,9 @@ const mockPharmacies: PharmacyWithDistance[] = [
   {
     id: '3',
     name: 'Rural Health Center',
-    address: 'Village Center, Nabha',
+    address: 'Village Center, Baddi',
     phone_number: '+91 98765 43212',
-    location_area: 'Nabha',
+    location_area: 'Baddi',
     distance: '1.2 km',
     inventory: []
   }

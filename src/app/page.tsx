@@ -206,7 +206,7 @@ export default function Home() {
               </h1>
               <div className="flex items-center space-x-1">
                 <span className="text-red-500 text-sm">📍</span>
-                <p className="text-sm text-gray-600">{t('common.nabhaPunjab')}</p>
+                <p className="text-sm text-gray-600">{t('common.baddiHimachal')}</p>
               </div>
             </div>
           </div>
